@@ -1,6 +1,7 @@
 package dev.tiago.agregadorInv.service;
 
 import dev.tiago.agregadorInv.controller.CreateUserDto;
+import dev.tiago.agregadorInv.controller.UpdateUserDto;
 import dev.tiago.agregadorInv.entity.User;
 import dev.tiago.agregadorInv.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,24 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public void updateUserById(String userId, UpdateUserDto updateUserDto){
+        var id = UUID.fromString(userId);
+        var userEntity = userRepository.findById(id);
+
+        if (userEntity.isPresent()){
+            var user = userEntity.get();
+
+            if (updateUserDto.username() != null){
+                user.setUsername(updateUserDto.username());
+            }
+            if (updateUserDto.password() != null){
+                user.setPassword(updateUserDto.password());
+            }
+
+            userRepository.save(user);
+        }
+    }
+
     public void deleteById(String userId){
         var id = UUID.fromString(userId);
 
@@ -49,5 +68,4 @@ public class UserService {
             userRepository.deleteById(id);
         }
     }
-
 }
