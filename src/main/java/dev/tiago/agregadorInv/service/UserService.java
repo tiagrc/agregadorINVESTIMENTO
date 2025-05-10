@@ -22,10 +22,11 @@ public class UserService {
 
     public UUID createUser(CreateUserDto createUserDto){
         // DTO -> ENTITY
-        var entity = new User(null,
+        var entity = new User(
+                null,
                 createUserDto.username(),
                 createUserDto.email(),
-                createUserDto.username(),
+                createUserDto.password(),
                 Instant.now(),
                 null);
 
