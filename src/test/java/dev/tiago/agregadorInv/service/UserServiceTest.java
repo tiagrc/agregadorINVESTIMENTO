@@ -1,6 +1,7 @@
 package dev.tiago.agregadorInv.service;
 
 import dev.tiago.agregadorInv.controller.CreateUserDto;
+import dev.tiago.agregadorInv.controller.UpdateUserDto;
 import dev.tiago.agregadorInv.entity.User;
 import dev.tiago.agregadorInv.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -205,7 +206,78 @@ class UserServiceTest {
 
     }
 
+    @Nested
+    class updateUserById{
+        @Test
+        @DisplayName("Should update user by id when user exists")
+        void shouldUpdateUserByIdWhenUserExists() {
+            // Arrange
+            var updateUserDto = new UpdateUserDto (
+                    "newusername",
+                    "newpassword"
+            );
+            var user = new User(
+                    UUID.randomUUID(),
+                    "username",
+                    "email@email.com",
+                    "password",
+                    Instant.now(),
+                    null
+            );
+            doReturn(Optional.of(user))
+                    .when(userRepository)
+                    .findById(uuidArgumentCaptor.capture());
+            doReturn(user)
+                    .when(userRepository)
+                    .save(userArgumentCaptor.capture());
 
+            // Act
+            userService.updateUserById(
+                    user.getUserId().toString(),updateUserDto);
+
+            // Assert
+            assertEquals(
+                    user.getUserId(), uuidArgumentCaptor.getValue());
+
+            var userCaptured = userArgumentCaptor.getValue();
+
+            assertEquals(
+                    updateUserDto.username(), userCaptured.getUsername());
+            assertEquals(
+                    updateUserDto.password(), userCaptured.getPassword());
+
+            verify(userRepository, times(1))
+                    .findById(uuidArgumentCaptor.getValue());
+            verify(userRepository, times(1))
+                    .save(user);
+        }
+
+        @Test
+        @DisplayName("Should NOT update user when user NOT exists")
+        void shouldNotUpdateUserWhenUserNotExists() {
+            // Arrange
+            var updateUserDto = new UpdateUserDto (
+                    "newusername",
+                    "newpassword"
+            );
+            var userId = UUID.randomUUID();
+
+            doReturn(Optional.empty())
+                    .when(userRepository)
+                    .findById(uuidArgumentCaptor.capture());
+
+            // Act
+            userService.updateUserById(userId.toString(), updateUserDto);
+
+            // Assert
+            assertEquals(userId, uuidArgumentCaptor.getValue());
+
+            verify(userRepository, times(1))
+                    .findById(uuidArgumentCaptor.getValue());
+            verify(userRepository, times(0))
+                    .save(any());
+        }
+    }
 
 }
 
