@@ -30,6 +30,7 @@ public class User {
     @UpdateTimestamp
     private Instant updateTimesTamp;
 
+    @OneToMany(mappedBy = "user")
     private List<Account> accounts;
 
     public User() {
@@ -90,5 +91,13 @@ public class User {
 
     public void setUpdateTimesTamp(Instant updateTimesTamp) {
         this.updateTimesTamp = updateTimesTamp;
+    }
+
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
     }
 }
